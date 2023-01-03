@@ -1,0 +1,10 @@
+training went really quickly (weird)
+run_new_1:
+            batch_size=1,
+            max_seq_len=960,  # 2 bars w/ 16 steps per bar
+            z_size=64,
+            enc_rnn_size=[128],
+            dec_rnn_size=[64, 64],
+
+output is really limited.. probably too few rnn sizes.
+
