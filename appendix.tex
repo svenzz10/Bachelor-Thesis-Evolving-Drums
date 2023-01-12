@@ -1,0 +1,43 @@
+\section{Appendix}\label{appendix}
+Alongside some useful scripts from the book Hands On With Magenta \cite{handson} we have to construct a new MIDI file from just the obtained drum tracks. We executed the script on 10000 MIDI files and it provided the following output:
+\begin{verbatim}
+    Iteration count: 10000/10000 (elapsed: 755 sec, remaining: 0 sec, total: 755)
+    END
+    Number of tracks in sample: 10000, number of results: 705 (7.05%)
+    Time:  761.5325352999989
+
+\end{verbatim}
+Both models have a few limitations regarding their data input. This is not documented at all in the Magenta space.\\\\
+Drums RNN only takes in Drum tracks that are specifically assigned to Channel 10 (the MIDI standard channel for drums). Otherwise the model doesn't register the MIDI files and can't infer from them. We have used an old program called Aria Maestosa to change the remaining MIDI files that weren't already programmed to Channel 10.
+\\
+MusicVAE handles the note pitch to drum instrument mapping itself. Unlike Drums RNN it doesn't use the General MIDI Drum Map, so you won't have to set each MIDI file to Channel 10. But it does have a limiting set of drum instruments that it can use. For example, a Hand Clap is registered as note pitch 39 and MusicVAE doesn't have a mapping of note pitch 39 to a Hand Clap. Whenever you use a Hand Clap in your MIDI file, MusicVAE won't be able to handle it and therefore the model will fail.
+To combat this problem, we have written another Python script which redefines all the note pitches that MusicVAE doesn't recognize, to note pitches that MusicVAE does recognize. It does mean however that with MusicVAE you can use less instrument heavy data than with DrumsRNN. Below is a list of all possible note pitches/instruments in MusicVAE.
+\begin{verbatim}
+FULL_DRUM_PITCH_CLASSES = [
+    [p] for p in  # pylint:disable=g-complex-comprehension
+    [36, 35, 38, 27, 28, 31, 32, 33, 34, 37, 39, 40, 56, 65, 66, 75, 85, 42, 44,
+     54, 68, 69, 70, 71, 73, 78, 80, 46, 67, 72, 74, 79, 81, 45, 29, 41, 61, 64,
+     84, 48, 47, 60, 63, 77, 86, 87, 50, 30, 43, 62, 76, 83, 49, 55, 57, 58, 51,
+     52, 53, 59, 82]
+]
+ROLAND_DRUM_PITCH_CLASSES = [
+    # kick drum
+    [36],
+    # snare drum
+    [38, 37, 40],
+    # closed hi-hat
+    [42, 22, 44],
+    # open hi-hat
+    [46, 26],
+    # low tom
+    [43, 58],
+    # mid tom
+    [47, 45],
+    # high tom
+    [50, 48],
+    # crash cymbal
+    [49, 52, 55, 57],
+    # ride cymbal
+    [51, 53, 59]
+]
+\end{verbatim}
